@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Sortable Boxes</title>
+    <style>
+        :root {
+            --bg-color: #d8eda9;
+            --box-size: 100px;
+            --box-gap: 20px;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            gap: var(--box-gap);
+            padding: 20px;
+            min-height: var(--box-size); 
+        }
+
+        .box {
+            width: var(--box-size);
+            height: var(--box-size);
+            background-color: white;
+            border: 2px solid #333;
+            cursor: grab;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            user-select: none; 
+        }
+
+        .box:active {
+            cursor: grabbing;
+        }
+
+        .box.dragging {
+            opacity: 0.5;
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container" id="draggable-list">
+        <div class="box" draggable="true">1</div>
+        <div class="box" draggable="true">2</div>
+        <div class="box" draggable="true">3</div>
+        <div class="box" draggable="true">4</div>
+        <div class="box" draggable="true">5</div>
+    </div>
+
+    
+
+    <script>
+        const draggables = document.querySelectorAll('.box');
+        const container = document.getElementById('draggable-list');
+
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('dragging');
+            });
+
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('dragging');
+            });
+        });
+
+        container.addEventListener('dragover', e => {
+            e.preventDefault();
+            
+            const afterElement = getDragAfterElement(container, e.clientX);
+            
+            const draggable = document.querySelector('.dragging');
+            
+            if (afterElement == null) {
+                container.appendChild(draggable);
+            } else {
+                container.insertBefore(draggable, afterElement);
+            }
+        });
+
+        function getDragAfterElement(container, x) {
+            const draggableElements = [...container.querySelectorAll('.box:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                
+                const offset = x - box.left - box.width / 2;
+                
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+    </script>
+</body>
+</html>
