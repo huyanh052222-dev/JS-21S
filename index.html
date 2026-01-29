@@ -28,7 +28,9 @@
             display: flex;
             gap: var(--box-gap);
             padding: 20px;
+            box-sizing: border-box;
             min-height: var(--box-size); 
+            flex-wrap: wrap;
         }
 
         .box {
@@ -57,10 +59,20 @@
             box-shadow: 0 8px 12px rgba(0,0,0,0.2);
         }
 
+        @media screen and (max-width: 600px) {
+            :root {
+                --box-size: 60px;
+                --box-gap: 5px;
+            }
+            .container{
+                padding: 0px;
+            }
+        }
+
+
     </style>
 </head>
 <body>
-
     <div class="container" id="draggable-list">
         <div class="box" draggable="true">1</div>
         <div class="box" draggable="true">2</div>
@@ -68,8 +80,6 @@
         <div class="box" draggable="true">4</div>
         <div class="box" draggable="true">5</div>
     </div>
-
-    
 
     <script>
         const draggables = document.querySelectorAll('.box');
@@ -80,7 +90,7 @@
                 draggable.classList.add('dragging');
             });
 
-            draggable.addEventListener('dragend', () => {
+            draggable.addEventListener('dragend', () => { 
                 draggable.classList.remove('dragging');
             });
         });
